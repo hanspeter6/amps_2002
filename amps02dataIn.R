@@ -221,76 +221,65 @@ tv_engagement_02 <- readRDS("tv_engagement_02.rds")
 
 ## 3rd Internet Media Set
 
-## accessed: sum of 12 months, 4weeks, 7days and yesterday
-internet_level1 <- internet_02[,str_detect(names(internet_02), 'ca49co(45)|(46)|(47)|(48)')]
+## accessed: sum of 4weeks, 7days and yesterday
+internet_level1 <- internet_02[,str_detect(names(internet_02), 'ca38co(40)|(45)|(52)')]
 
 #change all 2 = "No" and NA's' to 0
-for(i in 1: nrow(internet_level1)) {
-        for(j in 1: ncol(internet_level1)) {
-                if(is.na(internet_level1[i,j]) | internet_level1[i,j] == 2){
-                        internet_level1[i,j] <- 0
-                }
-        }
-}
+internet_level1[internet_level1 == 2 | is.na(internet_level1)] <- 0
 
 internet_level1 <- rowSums(internet_level1)
 
 # what internet was accessed for...
 ##  (maybe could use similar to vehicles?? as well as add up and multiply with first eng):
 
-internet_level2 <- internet_02[,str_detect(names(internet_02), 'ca49co(55)|(58)|(63)|(64)|(69)|(71)')]
+internet_level2 <- internet_02[,str_detect(names(internet_02),
+                                           'ca38co(41_3)|(41_4)|(41_6)|(41_7)|(41_8)|(41_9)|(42_0)|(42_1)|(42_2)|(42_3)|(42_4)|(42_5)|(42_6)')]
 
-# change NA and 3 = 0; 1,2,4 = 1
-for(i in 1: nrow(internet_level2)) {
-        for(j in 1: ncol(internet_level2)) {
-                if(is.na(internet_level2[i,j]) | internet_level2[i,j] == 3){
-                        internet_level2[i,j] <- 0
-                }
-                else {
-                        internet_level2[i,j] <- 1
-                }
-        }
-}
 
-names(internet_level2) <- c('int_search',
-                            'int_social',
-                            'int_print',
+# want to add "infos together to give int_search
+
+int_search <- transmute(internet_level2[,5:13], rowSums(internet_level2[,5:13]))
+internet_level2 <- internet_level2[,1:4] %>%
+        mutate(int_search = int_search[,1])
+        
+names(internet_level2) <- c('int_print',
+                            'int_radio',
                             'int_news',
-                            'int_tv',
-                            'int_radio')
+                            'int_social',
+                            'int_search')
 
 ## create single dataframe for internet multiplying internet_level1 with sum of internet_level2:
-internet_engagement_12 <- internet_level2  * internet_level1
+internet_engagement_02 <- internet_level2  * internet_level1
 
-saveRDS(internet_engagement_12, "internet_engagement_12.rds")
+saveRDS(internet_engagement_02, "internet_engagement_02.rds")
 
-internet_engagement_12 <- readRDS("internet_engagement_12.rds")
+internet_engagement_02 <- readRDS("internet_engagement_02.rds")
 
-## create single dataframe for media12, including total_engagement columns (consider using media groupings .. follow up on this!)
+## create single dataframe for media02, including total_engagement columns)
 
 # Level 1: Type
-media_type_12 <- data.frame(cbind(qn = print_02$qn,
+media_type_02 <- data.frame(cbind(qn = print_02$qn,
                                   scale(rowSums(newspapers_engagement_02)),
                                   scale(rowSums(magazines_engagement_02)),
                                   scale(rowSums(radio_engagement_02)),
                                   scale(rowSums(tv_engagement_02)),
-                                  scale(rowSums(internet_engagement_12))))
-names(media_type_12) <- c("qn",
+                                  scale(rowSums(internet_engagement_02))))
+names(media_type_02) <- c("qn",
                           "newspapers",
                           "magazines",
                           "radio",
                           "tv",
                           "internet")
 # Level 2: Vehicles
-media_vehicles_12 <- data.frame(cbind(qn = print_02$qn,
+media_vehicles_02 <- data.frame(cbind(qn = print_02$qn,
                                       newspapers_engagement_02,
                                       magazines_engagement_02,
                                       radio_engagement_02,
                                       tv_engagement_02,
-                                      internet_engagement_12))
+                                      internet_engagement_02))
 
-saveRDS(media_type_12, 'media_type_12.rds')
-saveRDS(media_vehicles_12, 'media_vehicles_12.rds')
+saveRDS(media_type_02, 'media_type_02.rds')
+saveRDS(media_vehicles_02, 'media_vehicles_02.rds')
 
 ## 4th Demographics Set (see notes for descriptions)
 
