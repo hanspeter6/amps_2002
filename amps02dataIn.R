@@ -283,9 +283,9 @@ saveRDS(media_vehicles_02, 'media_vehicles_02.rds')
 
 ## 4th Demographics Set (see notes for descriptions)
 
-age <- personal_02[,'ca56co34']
-sex <- demogrs_02[,'ca91co51a']
-edu <- demogrs_02[,'ca91co48']
+age <- personal_02[,'ca44co38']
+sex <- demogrs_02[,'ca46co51a']
+edu <- demogrs_02[,'ca46co48']
 for(i in 1: length(edu)) {
         if(edu[i] %in% c(6,7)) {
                 edu[i] <- edu[i] + 1
@@ -294,55 +294,68 @@ for(i in 1: length(edu)) {
                 edu[i] <- 6
         }
 }
-hh_inc <- demogrs_02[,'ca91co50']
-race <- demogrs_02[,'ca91co51b']
-province <- demogrs_02[,'ca91co56']
-metro1 <- demogrs_02[,'ca91co57']
-metro2 <- demogrs_02[,'ca91co58'] + 9
+hh_inc <- demogrs_02[,'ca46co50']
+race <- demogrs_02[,'ca46co51b']
+# dataset: 1 = white, 2 = black, 3 = coloured, 4 = indian.
+# 2012 dataset: 1 = black, 2 = coloured, 3 = indian, 4 = white
+# change 2002 to 2012 codes for consistency: 1 to 4; 2 to 1; 3 to 2 and 4 to 3
+race <- ifelse(race == 1, 4, race)
+race <- ifelse(race == 2, 1, race)
+race <- ifelse(race == 3, 2, race)
+race <- ifelse(race == 4, 3, race)
+
+province <- demogrs_02[,'ca46co56']
+metro1 <- demogrs_02[,'ca46co57']
+metro2 <- demogrs_02[,'ca46co58'] + 9
 metro <- rowSums(cbind(metro1,
                        metro2), na.rm = TRUE)
-#as in '95 need to sort out double count of Soweto....
+#as in '95 and 2012 need to sort out double count of Soweto....
 # seems that all the 19s are the sum of 7 & 12s (ie, Soweto)
 # # code as such, ie all 19s are actually 12s (this also eliminates double count in the 7s ( so exlude Soweto)) >NB double check this is same in '95!!!
+# check
+table(metro) # yes, continue
 metro <- ifelse(metro == 19, 12, metro)
-lang <- demogrs_02[,'ca91co75'] + 1 # change 0 to 1, so add one to all
-lifestages <- demogrs_02[,'ca91co77']
-mar_status <- personal_02[,'ca56co09']
-pers_inc1 <- personal_02[,'ca57co61']
-pers_inc2 <- personal_02[,'ca57co62'] + 10
-pers_inc3 <- personal_02[,'ca57co63'] + 20
-pers_inc4 <- personal_02[,'ca57co64'] + 30
-for(i in 1: length(pers_inc4)) {
-        if(!is.na(pers_inc4[i])) {
-                if(pers_inc4[i] == 31) {
-                        pers_inc4[i] <- 0
-                }
-                if(pers_inc4[i] == 32) {
-                        pers_inc4[i] <- 60
-                }
-        }
-}
-pers_inc <- rowSums(cbind(pers_inc1,
-                          pers_inc2,
-                          pers_inc3,
-                          pers_inc4), na.rm = TRUE)
-lsm <- lsm_02[,'ca91co64']
+
+lang <- demogrs_02[,'ca46co75'] + 1 # change 0 to 1, so add one to all
+
+lifestages <- demogrs_02[,'ca46co77'] # nb different categories from 2012
+
+mar_status <- personal_02[,'ca44co09']
+# pers_inc1 <- personal_02[,'ca57co61']
+# pers_inc2 <- personal_02[,'ca57co62'] + 10
+# pers_inc3 <- personal_02[,'ca57co63'] + 20
+# pers_inc4 <- personal_02[,'ca57co64'] + 30
+# for(i in 1: length(pers_inc4)) {
+#         if(!is.na(pers_inc4[i])) {
+#                 if(pers_inc4[i] == 31) {
+#                         pers_inc4[i] <- 0
+#                 }
+#                 if(pers_inc4[i] == 32) {
+#                         pers_inc4[i] <- 60
+#                 }
+#         }
+# }
+# pers_inc <- rowSums(cbind(pers_inc1,
+#                           pers_inc2,
+#                           pers_inc3,
+#                           pers_inc4), na.rm = TRUE)
+lsm <- lsm_02[,'ca46co64']
 lsm <- ifelse(lsm == 0,10,lsm)
 
-lifestyle <- lsm_02[,'ca58co39'] + 1 # to get rid of zero
+# lifestyle <- lsm_02[,'ca58co39'] + 1 # to get rid of zero
 
-attitudesA <- lsm_02[,'ca67co10'] + 1 # to get rid of zeros
-attitudesB <- lsm_02[,'ca67co10_lsm']
-attitudesA <- ifelse(is.na(attitudesA), 0, attitudesA)
-attitudesB <- ifelse(is.na(attitudesB), 0, attitudesB)
-attitudes <- attitudesA + attitudesB
-attitudes <- ifelse(attitudes == 8, 4, attitudes)
-attitudes <- ifelse(attitudes == 5 | attitudes == 6, attitudes + 1, attitudes)
-attitudes <- ifelse(attitudes == 9, 5, attitudes)
-table(attitudes) # check
+# attitudesA <- lsm_02[,'ca67co10'] + 1 # to get rid of zeros
+# attitudesB <- lsm_02[,'ca67co10_lsm']
+# attitudesA <- ifelse(is.na(attitudesA), 0, attitudesA)
+# attitudesB <- ifelse(is.na(attitudesB), 0, attitudesB)
+# attitudes <- attitudesA + attitudesB
+# attitudes <- ifelse(attitudes == 8, 4, attitudes)
+# attitudes <- ifelse(attitudes == 5 | attitudes == 6, attitudes + 1, attitudes)
+# attitudes <- ifelse(attitudes == 9, 5, attitudes)
+# table(attitudes) # check
 
 
-demographics_12 <- data.frame(qn = print_02$qn,
+demographics_02 <- data.frame(qn = print_02$qn,
                               pwgt = print_02$pwgt,
                               age,
                               sex,
@@ -354,13 +367,10 @@ demographics_12 <- data.frame(qn = print_02$qn,
                               lang,
                               lifestages,
                               mar_status,
-                              pers_inc,
-                              lsm,
-                              lifestyle,
-                              attitudes)
+                              lsm)
 
 
 # save as
 
-saveRDS(demographics_12, "demographics_12.rds")
-demographics_12 <- readRDS("demographics_12.rds")
+saveRDS(demographics_02, "demographics_02.rds")
+demographics_02 <- readRDS("demographics_02.rds")
