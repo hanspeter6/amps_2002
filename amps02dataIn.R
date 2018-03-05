@@ -26,7 +26,7 @@ lifestage_02_labels <- readLines("/Users/HansPeter/Dropbox/Statistics/UCTDataSci
 # 
 save(print_02_labels, electr_02_labels, internet_02_labels, demogrs_02_labels, personal_02_labels, lsm_02_labels, lifestage_02_labels, file = "labels_02.RData")
 
-load("labels_12.RData")
+load("labels_02.RData")
 
 ## 1st Print (newspapers and magazines) Media Set
 
@@ -94,6 +94,7 @@ print_engagement_02 <- issues_02 * thorough_02
 # replace nas with zero's: # function to replace NA's with 0 in dataframe x. consider also dplyr::replace_na
 # # # replace NAs with zeros
 print_engagement_02[is.na(print_engagement_02)] <- 0
+
 saveRDS(print_engagement_02, "print_engagement_02.rds")
 
 names(print_engagement_02[39:42])
@@ -109,139 +110,114 @@ saveRDS(magazines_engagement_02, "magazines_engagement_02.rds")
 magazines_engagement_02 <- readRDS("magazines_engagement_02.rds")
 newspapers_engagement_02 <- readRDS("newspapers_engagement_02.rds")
 
-
-
-
-
-
-
-
-
-
-
 ## 2nd Electronic Media Set
 # RADIO
 
-names_radio_12_4w <- electr_02_labels %>%
-        str_subset('ca64co\\d{2}_\\d') %>%
-        str_replace('.+listened.+4\\sweeks\\s-\\s','')
-names_radio_12_4w <- names_radio_12_4w[-c(98,99)] # get rid of "unsure" and "none"
+# creating a names vector
+names_radio_02 <- electr_02_labels %>%
+        str_subset('.+Listened.+4\\sweeks') %>%
+        str_replace('.+Listened\\sto\\s','') %>%
+        str_replace('\\sin\\sthe\\spast.+','') 
 
-names_radio_12_7 <- electr_02_labels %>%
-        str_subset('ca65co\\d{2}_\\d') %>%
-        str_replace('.+listened.+7\\sdays\\s-\\s','')
-names_radio_12_7 <- names_radio_12_7[-c(81, 87,88)] # get rid of "unsure" and "none" & empty one 
+# get rid of first: "any Radio services via a satellite transmission"
+names_radio_02 <- names_radio_02[-1]
 
-names_radio_12_y <- electr_02_labels %>%
-        str_subset('ca66co\\d{2}_\\d') %>%
-        str_replace('.+listened\\sto\\syesterday\\s-\\s','')
-names_radio_12_y <- names_radio_12_y[-c(64,65)] # get rid of "unsure" and "none"
+# also get rid of the following summaries:
+# Total Radio (Any Radio) [22]
+# SABC African Language Services [23]
+# Total Community [24]
+# Other Radio [31]
+# Limpopo Corridor [32]
+names_radio_02 <- names_radio_02[-c(22,23,24,31,32)]
 
+fix(names_radio_02)
 
-# # most radio stations in 4 weeks, so use that to create names list
-# names_radio_12 <- names_radio_12_4w
-# fix(names_radio_12)
-saveRDS(names_radio_12, "names_radio_12.rds")
-names_radio_12 <- readRDS('names_radio_12.rds')
+saveRDS(names_radio_02, "names_radio_02.rds")
+names_radio_02 <- readRDS('names_radio_02.rds')
 
 # get data...
-radio4weeks_12 <- electr_02[,str_detect(names(electr_02), 'ca64co\\d{2}_\\d')]
-radio4weeks_12 <- radio4weeks_12[,-c(98,99)] # get rid of "unsure" and "none"
+radio4weeks_02 <- electr_02[,str_detect(names(electr_02), 'ca54co\\d{2}_\\d')]
+radio4weeks_02 <- radio4weeks_02[,-c(22,23,24,31,32)] # get rid of list described above
 
-radio7days_12 <- electr_02[,str_detect(names(electr_02), 'ca65co\\d{2}_\\d')]
-radio7days_12 <- radio7days_12[,-c(81, 87,88)]  # get rid of "unsure" and "none" & empty one 
+radio7days_02 <- electr_02[,str_detect(names(electr_02), 'ca50co\\d{2}_\\d')]
+radio7days_02 <- radio7days_02[,-c(22,23,24,31,32)]  # get rid of list described above
 
-radioYesterday_12 <- electr_02[,str_detect(names(electr_02), 'ca66co\\d{2}_\\d')]
-radioYesterday_12 <- radioYesterday_12[,-c(64,65)]  # get rid of "unsure" and "none"
+radioYesterday_02 <- electr_02[,str_detect(names(electr_02), 'ca53co\\d{2}_\\d')]
+radioYesterday_02 <- radioYesterday_02[,-c(22,23,24,31,32)]  # get rid of "unsure" and "none"
 
-# identifying missing stations by changing all to "64"
-a <- names(radio4weeks_12)
-b <- names(radio7days_12)
-c <- names(radioYesterday_12)
-b_adj <- b %>%
-        str_replace("65", "64")
-c_adj <- c %>%
-        str_replace("66", "64")
-
-names(radio7days_12) <- b_adj
-names(radioYesterday_12) <- c_adj
-
-ind_7 <- which(names(radio4weeks_12) %in% names(radio7days_12))
-ind_y <- which(names(radio4weeks_12) %in% names(radioYesterday_12))
 
 # adding up
-radio4weeks_12[,ind_7] <- radio4weeks_12[,ind_7] + radio7days_12
-radio4weeks_12[,ind_y] <- radio4weeks_12[,ind_y] + radioYesterday_12
+radio4weeks_02[,ind_7] <- radio4weeks_02[,ind_7] + radio7days_02
+radio4weeks_02[,ind_y] <- radio4weeks_02[,ind_y] + radioYesterday_02
 
 # creating engagement set:
-radio_engagement_12 <- radio4weeks_12
-names(radio_engagement_12) <- names_radio_12
+radio_engagement_02 <- radio4weeks_02 + radio7days_02 + radioYesterday_02
+names(radio_engagement_02) <- names_radio_02
 
-saveRDS(radio_engagement_12, "radio_engagement_12.rds")
-radio_engagement_12 <- readRDS("radio_engagement_12.rds")
+saveRDS(radio_engagement_02, "radio_engagement_02.rds")
+radio_engagement_02 <- readRDS("radio_engagement_02.rds")
 
-## TV (this year, included specific dstv and toptv channels (will include them))
-names_tv_12 <- electr_02_labels %>%
-        str_subset('Watched.+4\\sWEEKS') %>%
-        str_replace('.+Watched\\s','') %>%
-        str_replace('in\\sthe\\sPAST\\s4\\sWEEKS','') %>%
+
+names_tv_12
+
+## TV
+names_tv_02 <- electr_02_labels %>%
+        str_subset('watched.+4\\sweeks') %>%
+        str_replace('.+watched\\s','') %>%
+        str_replace('in\\sthe\\spast\\s4\\sweeks','') %>%
         str_trim()
 
-saveRDS(names_tv_12, "names_tv_12.rds")
-names_tv_12 <- readRDS("names_tv_12.rds")
+# fix(names_tv_02)
+
+# cut total, unsure and no tv
+names_tv_02 <- names_tv_02[-c(10:12)]
+saveRDS(names_tv_02, "names_tv_02.rds")
+names_tv_02 <- readRDS("names_tv_02.rds")
 
 # want to isolate only past 4 weeks and get rid of ("UNSURE", and "no TV")
-tv4weeks_12 <- electr_02[,c('ca45co30_1',
-                            'ca45co30_2',
-                            'ca45co30_3',
-                            'ca45co30_4',
-                            'ca45co30_5',
-                            'ca45co30_6',
-                            'ca45co30_7',
-                            'ca45co30_8',
-                            'ca45co30_9',
-                            'ca45co31_0',
-                            'ca45co72_3',
-                            'ca45co72_8'
+tv4weeks_02 <- electr_02[,c('ca38co9_1',
+                            'ca38co9_2',
+                            'ca38co9_3',
+                            'ca38co9_4',
+                            'ca38co9_5',
+                            'ca38co9_6',
+                            'ca38co9_7',
+                            'ca38co9_5',
+                            'ca38co17_5'
 )] 
 
 # want to isolate only past 7 days...
-tv7days_12 <- electr_02[,c('ca45co32_1',
-                           'ca45co32_2',
-                           'ca45co32_3',
-                           'ca45co32_4',
-                           'ca45co32_5',
-                           'ca45co32_6',
-                           'ca45co32_7',
-                           'ca45co32_8',
-                           'ca45co32_9',
-                           'ca45co33_0',
-                           'ca45co74_3',
-                           'ca45co74_8'
+tv7days_02 <- electr_02[,c('ca38co19_1',
+                           'ca38co19_2',
+                           'ca38co19_3',
+                           'ca38co19_4',
+                           'ca38co19_5',
+                           'ca38co19_6',
+                           'ca38co19_7',
+                           'ca38co27_4',
+                           'ca38co27_5'
 )] 
 
 # want to isolate only yesterday...(indexes w.r.t 4weeks that are missing here: 7, 10)
-tvYesterday_12 <- electr_02[,c('ca45co34_1',
-                               'ca45co34_2',
-                               'ca45co34_3',
-                               'ca45co34_4',
-                               'ca45co34_5',
-                               'ca45co34_6',
-                               'ca45co34_8',
-                               'ca45co34_9',
-                               'ca45co76_3',
-                               'ca45co76_8'
+tvYesterday_02 <- electr_02[,c('ca38co29_1',
+                               'ca38co29_2',
+                               'ca38co29_3',
+                               'ca38co29_4',
+                               'ca38co29_5',
+                               'ca38co29_6',
+                               'ca38co29_7',
+                               'ca38co37_4',
+                               'ca38co37_5'
 )]
 
-# combining into a tv engagement dataset (using tv4weeks_12 as basis):
+# combining into a tv engagement dataset (using tv4weeks_02 as basis):
 
-tv_engagement_12 <- tv4weeks_12 + tv7days_12
-tv_engagement_12[,-c(7,10)] <- tv_engagement_12[,-c(7,10)] + tvYesterday_12
-names(tv_engagement_12) <- names_tv_12
+tv_engagement_02 <- tv4weeks_02 + tv7days_02+ tvYesterday_02
+names(tv_engagement_02) <- names_tv_02
 
-saveRDS(tv_engagement_12, "tv_engagement_12.rds")
+saveRDS(tv_engagement_02, "tv_engagement_02.rds")
 
-tv_engagement_12 <- readRDS("tv_engagement_12.rds")
+tv_engagement_02 <- readRDS("tv_engagement_02.rds")
 
 ## 3rd Internet Media Set
 
@@ -296,8 +272,8 @@ internet_engagement_12 <- readRDS("internet_engagement_12.rds")
 media_type_12 <- data.frame(cbind(qn = print_02$qn,
                                   scale(rowSums(newspapers_engagement_02)),
                                   scale(rowSums(magazines_engagement_02)),
-                                  scale(rowSums(radio_engagement_12)),
-                                  scale(rowSums(tv_engagement_12)),
+                                  scale(rowSums(radio_engagement_02)),
+                                  scale(rowSums(tv_engagement_02)),
                                   scale(rowSums(internet_engagement_12))))
 names(media_type_12) <- c("qn",
                           "newspapers",
@@ -309,8 +285,8 @@ names(media_type_12) <- c("qn",
 media_vehicles_12 <- data.frame(cbind(qn = print_02$qn,
                                       newspapers_engagement_02,
                                       magazines_engagement_02,
-                                      radio_engagement_12,
-                                      tv_engagement_12,
+                                      radio_engagement_02,
+                                      tv_engagement_02,
                                       internet_engagement_12))
 
 saveRDS(media_type_12, 'media_type_12.rds')
