@@ -281,6 +281,8 @@ media_vehicles_02 <- data.frame(cbind(qn = print_02$qn,
 saveRDS(media_type_02, 'media_type_02.rds')
 saveRDS(media_vehicles_02, 'media_vehicles_02.rds')
 
+media_type_02 <- readRDS('media_type_02.rds')
+media_vehicles_02 <- readRDS('media_vehicles_02.rds')
 ## 4th Demographics Set (see notes for descriptions)
 
 age <- personal_02[,'ca44co38']
@@ -313,11 +315,29 @@ metro <- rowSums(cbind(metro1,
 # seems that all the 19s are the sum of 7 & 12s (ie, Soweto)
 # # code as such, ie all 19s are actually 12s (this also eliminates double count in the 7s ( so exlude Soweto)) >NB double check this is same in '95!!!
 # check
+
+# collect and code into single metro set:
+#0 = no metro
+#1 Cape Town
+#2 Cape Town Fringe Area
+#3 Port Elizabeth/Uitenhage
+#4 East London
+#5 Durban
+#6 Bloemfontein
+#7 Greater Johannesburg
+#8 Reef
+#9 Pretoria
+#10 Kimberley
+##11 Pietermaritzburg
+##12 Vaal
+##13 Welkom
+metro <- ifelse(metro == 19, 7, metro)
+metro <- ifelse(metro == 13, 12, metro)
 table(metro) # yes, continue
-metro <- ifelse(metro == 19, 12, metro)
 
 lang <- demogrs_02[,'ca46co75'] + 1 # change 0 to 1, so add one to all
-
+# change NAs to "other"
+lang <- ifelse(is.na(lang), 12, lang) # 12 == other
 lifestages <- demogrs_02[,'ca46co77'] # nb different categories from 2012
 
 mar_status <- personal_02[,'ca44co09']
@@ -355,7 +375,7 @@ lsm <- ifelse(lsm == 0,10,lsm)
 # table(attitudes) # check
 
 
-demographics_02 <- data.frame(qn = print_02$qn,
+demographics_02 <- data.frame(qn = print_02$qn, # no lifestyle or attitudes yet
                               pwgt = print_02$pwgt,
                               age,
                               sex,
