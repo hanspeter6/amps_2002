@@ -301,10 +301,12 @@ race <- demogrs_02[,'ca46co51b']
 # dataset: 1 = white, 2 = black, 3 = coloured, 4 = indian.
 # 2012 dataset: 1 = black, 2 = coloured, 3 = indian, 4 = white
 # change 2002 to 2012 codes for consistency: 1 to 4; 2 to 1; 3 to 2 and 4 to 3
-race <- ifelse(race == 1, 4, race)
-race <- ifelse(race == 2, 1, race)
-race <- ifelse(race == 3, 2, race)
-race <- ifelse(race == 4, 3, race)
+
+race <- ifelse(race == 1, 9, race)
+race <- ifelse(race == 2, 6, race)
+race <- ifelse(race == 3, 7, race)
+race <- ifelse(race == 4, 8, race)
+race <- race - 5
 
 province <- demogrs_02[,'ca46co56']
 metro1 <- demogrs_02[,'ca46co57']
