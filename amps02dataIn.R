@@ -93,7 +93,7 @@ print_engagement_02_simple <- issues_02
 print_engagement_02[is.na(print_engagement_02)] <- 0
 print_engagement_02_simple[is.na(print_engagement_02_simple)] <- 0
 saveRDS(print_engagement_02, "print_engagement_02.rds")
-
+saveRDS(print_engagement_02_simple, "print_engagement_02_simple.rds")
 names(print_engagement_02[39:42])
 
 print_engagement_02 <- readRDS("print_engagement_02.rds")
@@ -110,6 +110,8 @@ saveRDS(magazines_engagement_02_simple, "magazines_engagement_02_simple.rds")
 
 magazines_engagement_02 <- readRDS("magazines_engagement_02.rds")
 newspapers_engagement_02 <- readRDS("newspapers_engagement_02.rds")
+magazines_engagement_02_simple <- readRDS("magazines_engagement_02_simple.rds")
+newspapers_engagement_02_simple <- readRDS("newspapers_engagement_02_simple.rds")
 
 ## 2nd Electronic Media Set
 # RADIO
@@ -254,6 +256,8 @@ names(internet_level2) <- c('int_print',
 ## create single dataframe for internet multiplying internet_level1 with sum of internet_level2:
 internet_engagement_02 <- internet_level2  * internet_level1
 internet_engagement_02_simple <- internet_level1
+
+
 saveRDS(internet_engagement_02, "internet_engagement_02.rds")
 saveRDS(internet_engagement_02_simple, "internet_engagement_02_simple.rds")
 internet_engagement_02 <- readRDS("internet_engagement_02.rds")
@@ -269,7 +273,7 @@ media_type_02 <- data.frame(cbind(qn = print_02$qn,
                                   scale(rowSums(internet_engagement_02))))
 media_type_02_simple <- data.frame(cbind(qn = print_02$qn,
                                          scale(rowSums(newspapers_engagement_02_simple)),
-                                         scale(rowSums(magazines_engagement_02)),
+                                         scale(rowSums(magazines_engagement_02_simple)),
                                          scale(rowSums(radio_engagement_02)),
                                          scale(rowSums(tv_engagement_02)),
                                          scale(internet_engagement_02_simple)))
@@ -413,3 +417,4 @@ demographics_02 <- data.frame(qn = print_02$qn, # no lifestyle or attitudes yet
 
 saveRDS(demographics_02, "demographics_02.rds")
 demographics_02 <- readRDS("demographics_02.rds")
+ 

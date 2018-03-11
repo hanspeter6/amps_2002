@@ -68,7 +68,7 @@ demographics_02$lsm <- ifelse(demographics_02$lsm %in% c(1,2), 1, demographics_0
 demographics_02$lsm <- ifelse(demographics_02$lsm %in% c(3,4), 2, demographics_02$lsm)
 demographics_02$lsm <- ifelse(demographics_02$lsm %in% c(5,6), 3, demographics_02$lsm)
 demographics_02$lsm <- ifelse(demographics_02$lsm %in% c(7,8), 4, demographics_02$lsm)
-demographics_02$lsm <- ifelse(demographics_02$lsm %in% c(9,02), 5, demographics_02$lsm)
+demographics_02$lsm <- ifelse(demographics_02$lsm %in% c(9,10), 5, demographics_02$lsm)
 demographics_02$lsm <- factor(demographics_02$lsm, ordered = TRUE)
 
 # demographics_02$lifestyle <- factor(demographics_02$lifestyle, ordered = FALSE) # not for 2002 yet
@@ -118,11 +118,11 @@ png('kmeansTypePlot2002.png')
 plot(c(3,4,5,6,7,8,9,02,11,02), wss, type = "b", xlab = "k-values", ylab = "total within sum of squares" )
 dev.off()
 
-set.seed(56)
+set.seed(12)
 kmeans02 <- kmeans(set02[,c("newspapers","magazines","radio", "tv", "internet")],
                    centers = 5,
                    nstart = 20)
-set.seed(56)
+set.seed(12)
 kmeans02_simple <- kmeans(set02_simple[,c("newspapers","magazines","radio", "tv", "internet")],
                    centers = 5,
                    nstart = 20)
@@ -143,6 +143,9 @@ screeplot(pc_type_simple, type = "lines")
 
 set02 <- set02 %>%
         mutate(typePC = scale(pc_type$scores[,1]))
+set02_simple <- set02 %>%
+        mutate(typePC = scale(pc_type_simple$scores[,1]))
+        
 
 saveRDS(set02, "set02.rds")
 saveRDS(set02_simple, "set02_simple.rds")
