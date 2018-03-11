@@ -25,6 +25,7 @@ tv_engagement_02 <- readRDS("tv_engagement_02.rds")
 internet_engagement_02 <- readRDS("internet_engagement_02.rds")
 
 media_type_02 <- readRDS("media_type_02.rds")
+media_type_02_simple <- readRDS("media_type_02_simple.rds")
 media_vehicles_02 <- readRDS("media_vehicles_02.rds")
 
 demographics_02 <- readRDS("demographics_02.rds")
@@ -78,6 +79,10 @@ set02 <- demographics_02 %>%
         left_join(media_type_02) %>%
         left_join(media_vehicles_02) %>%
         filter(metro != 0)
+set02_simple <- demographics_02 %>%
+        left_join(media_type_02_simple) %>%
+        left_join(media_vehicles_02) %>%
+        filter(metro != 0)
 
 # consider some correlations
 
@@ -117,15 +122,32 @@ set.seed(56)
 kmeans02 <- kmeans(set02[,c("newspapers","magazines","radio", "tv", "internet")],
                    centers = 5,
                    nstart = 20)
-table(kmeans02$cluster) #
+set.seed(56)
+kmeans02_simple <- kmeans(set02_simple[,c("newspapers","magazines","radio", "tv", "internet")],
+                   centers = 5,
+                   nstart = 20)
+
 
 # add cluster labels to the dataset
 set02 <- set02 %>%
         mutate(cluster = factor(kmeans02$cluster))
+set02_simple <- set02_simple %>%
+        mutate(cluster = factor(kmeans02_simple$cluster))
+
+# trying out idea of first pc scores as measure of media type mix...kinda engagement...think about this
+
+pc_type <- princomp(set02[,c('newspapers', 'magazines', 'tv', 'radio', 'internet')])
+screeplot(pc_type, type = "lines")
+pc_type_simple <- princomp(set02_simple[,c('newspapers', 'magazines', 'tv', 'radio', 'internet')])
+screeplot(pc_type_simple, type = "lines")
+
+set02 <- set02 %>%
+        mutate(typePC = scale(pc_type$scores[,1]))
 
 saveRDS(set02, "set02.rds")
-
+saveRDS(set02_simple, "set02_simple.rds")
 set02 <- readRDS("set02.rds")
+set02_simple <- readRDS("set02_simple.rds")
 
 # consider multidimensional scaling and self organising maps on the clusters :
 
