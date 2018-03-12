@@ -271,6 +271,7 @@ media_type_02 <- data.frame(cbind(qn = print_02$qn,
                                   scale(rowSums(radio_engagement_02)),
                                   scale(rowSums(tv_engagement_02)),
                                   scale(rowSums(internet_engagement_02))))
+
 media_type_02_simple <- data.frame(cbind(qn = print_02$qn,
                                          scale(rowSums(newspapers_engagement_02_simple)),
                                          scale(rowSums(magazines_engagement_02_simple)),
@@ -283,6 +284,7 @@ names(media_type_02) <- c("qn",
                           "radio",
                           "tv",
                           "internet")
+
 names(media_type_02_simple) <- c("qn",
                           "newspapers",
                           "magazines",
@@ -296,14 +298,22 @@ media_vehicles_02 <- data.frame(cbind(qn = print_02$qn,
                                       radio_engagement_02,
                                       tv_engagement_02,
                                       internet_engagement_02))
+media_vehicles_02_simple <- data.frame(cbind(qn = print_02$qn,
+                                      newspapers_engagement_02_simple,
+                                      magazines_engagement_02_simple,
+                                      radio_engagement_02,
+                                      tv_engagement_02,
+                                      internet_engagement_02_simple))
 
 saveRDS(media_type_02, 'media_type_02.rds')
 saveRDS(media_type_02_simple, 'media_type_02_simple.rds')
 saveRDS(media_vehicles_02, 'media_vehicles_02.rds')
+saveRDS(media_vehicles_02_simple, 'media_vehicles_02_simple.rds')
 
 media_type_02 <- readRDS('media_type_02.rds')
 media_type_02_simple <- readRDS('media_type_02_simple.rds')
 media_vehicles_02 <- readRDS('media_vehicles_02.rds')
+media_vehicles_02_simple <- readRDS('media_vehicles_02_simple.rds')
 ## 4th Demographics Set (see notes for descriptions)
 
 age <- personal_02[,'ca44co38']
