@@ -27,7 +27,7 @@ internet_engagement_02 <- readRDS("internet_engagement_02.rds")
 media_type_02 <- readRDS("media_type_02.rds")
 media_type_02_simple <- readRDS("media_type_02_simple.rds")
 media_vehicles_02 <- readRDS("media_vehicles_02.rds")
-
+media_vehicles_02_simple <- readRDS("media_vehicles_02_simple.rds")
 demographics_02 <- readRDS("demographics_02.rds")
 
 #reducing levels of categorical variables and setting factor types for demographics:
@@ -81,7 +81,7 @@ set02 <- demographics_02 %>%
         filter(metro != 0)
 set02_simple <- demographics_02 %>%
         left_join(media_type_02_simple) %>%
-        left_join(media_vehicles_02) %>%
+        left_join(media_vehicles_02_simple) %>%
         filter(metro != 0)
 
 # consider some correlations
@@ -143,7 +143,7 @@ screeplot(pc_type_simple, type = "lines")
 
 set02 <- set02 %>%
         mutate(typePC = scale(pc_type$scores[,1]))
-set02_simple <- set02 %>%
+set02_simple <- set02_simple %>%
         mutate(typePC = scale(pc_type_simple$scores[,1]))
         
 
