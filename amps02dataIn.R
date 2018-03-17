@@ -43,28 +43,6 @@ names_dailies_02 <- names_print_02[1:16]
 names_biweeklies_02 <- names_print_02[17]
 names_weeklies_02 <- names_print_02[18:39]
 
-# # # NBNB: Not community papers in 2012...
-# names_community_cape_town_02 <- names_print_02[40:51]
-# names_community_restCape_02 <- names_print_02[52:61]
-# names_community_FreeState_02 <- names_print_02[62:66]
-# names_community_NWest_02 <- names_print_02[67:68]
-# names_community_Jhb_02 <- names_print_02[69]
-# names_community_ERand_02 <- names_print_02[70:71]
-# names_community_KZn_02 <- names_print_02[72:74]
-# 
-# names_mags_weekly_02 <- names_print_02[75:89]
-# names_fortnightly_mags_02 <- names_print_02[90:92]
-# names_monthly_news_02 <- names_print_02[93]
-# names_monthly_mags_12 <- names_print_02[94:152]
-# 
-# names_alt_monthly_02 <- names_print_02[153:155]
-# names_quarterly_mags_02 <- names_print_02[156:158]
-
-# NOT in 2002. From 2012..??? Double check!!
-# names_monthly_store_mags_02 <- names_print_02[148:149]
-# names_alt_month_store_mags_02 <- names_print_02[162:163]
-# names_quarterly_store_mags_02 <- names_print_02[169:172]
-
 # create print dataset (NB since no community newspapers in 2012, have excluded them here also...Double check as I go and also with other periods)
 issues_02 <- print_02[,str_detect(names(print_02), 'ca[4567]co\\d{2}')]
 issues_02 <- issues_02[,c(1:39,75:158)] # get rid of community newspapers (not in 2012.... check this later again)
@@ -271,13 +249,6 @@ media_type_02 <- data.frame(cbind(qn = print_02$qn,
                                   scale(rowSums(radio_engagement_02)),
                                   scale(rowSums(tv_engagement_02)),
                                   scale(rowSums(internet_engagement_02))))
-
-media_type_02_simple <- data.frame(cbind(qn = print_02$qn,
-                                         scale(rowSums(newspapers_engagement_02_simple)),
-                                         scale(rowSums(magazines_engagement_02_simple)),
-                                         scale(rowSums(radio_engagement_02)),
-                                         scale(rowSums(tv_engagement_02)),
-                                         scale(internet_engagement_02_simple)))
 names(media_type_02) <- c("qn",
                           "newspapers",
                           "magazines",
@@ -285,12 +256,26 @@ names(media_type_02) <- c("qn",
                           "tv",
                           "internet")
 
+media_type_02 <- media_type_02 %>%
+        mutate(all = as.vector(scale(newspapers + magazines + radio + tv + internet))) 
+
+
+media_type_02_simple <- data.frame(cbind(qn = print_02$qn,
+                                         scale(rowSums(newspapers_engagement_02_simple)),
+                                         scale(rowSums(magazines_engagement_02_simple)),
+                                         scale(rowSums(radio_engagement_02)),
+                                         scale(rowSums(tv_engagement_02)),
+                                         scale(internet_engagement_02_simple)))
+
 names(media_type_02_simple) <- c("qn",
                           "newspapers",
                           "magazines",
                           "radio",
                           "tv",
                           "internet")
+media_type_02_simple <- media_type_02_simple %>%
+        mutate(all = as.vector(scale(newspapers + magazines + radio + tv + internet))) 
+
 # Level 2: Vehicles
 media_vehicles_02 <- data.frame(cbind(qn = print_02$qn,
                                       newspapers_engagement_02,
@@ -314,8 +299,9 @@ media_type_02 <- readRDS('media_type_02.rds')
 media_type_02_simple <- readRDS('media_type_02_simple.rds')
 media_vehicles_02 <- readRDS('media_vehicles_02.rds')
 media_vehicles_02_simple <- readRDS('media_vehicles_02_simple.rds')
-## 4th Demographics Set (see notes for descriptions)
 
+
+## 4th Demographics Set (see notes for descriptions)
 age <- personal_02[,'ca44co38']
 sex <- demogrs_02[,'ca46co51a']
 edu <- demogrs_02[,'ca46co48']
@@ -374,41 +360,13 @@ lang <- ifelse(is.na(lang), 12, lang) # 12 == other
 lifestages <- demogrs_02[,'ca46co77'] # nb different categories from 2012
 
 mar_status <- personal_02[,'ca44co09']
-# pers_inc1 <- personal_02[,'ca57co61']
-# pers_inc2 <- personal_02[,'ca57co62'] + 10
-# pers_inc3 <- personal_02[,'ca57co63'] + 20
-# pers_inc4 <- personal_02[,'ca57co64'] + 30
-# for(i in 1: length(pers_inc4)) {
-#         if(!is.na(pers_inc4[i])) {
-#                 if(pers_inc4[i] == 31) {
-#                         pers_inc4[i] <- 0
-#                 }
-#                 if(pers_inc4[i] == 32) {
-#                         pers_inc4[i] <- 60
-#                 }
-#         }
-# }
-# pers_inc <- rowSums(cbind(pers_inc1,
-#                           pers_inc2,
-#                           pers_inc3,
-#                           pers_inc4), na.rm = TRUE)
+
 lsm <- lsm_02[,'ca46co64']
 lsm <- ifelse(lsm == 0,10,lsm)
 
-# lifestyle <- lsm_02[,'ca58co39'] + 1 # to get rid of zero
+# no lifestyle or attitudes yet.
 
-# attitudesA <- lsm_02[,'ca67co10'] + 1 # to get rid of zeros
-# attitudesB <- lsm_02[,'ca67co10_lsm']
-# attitudesA <- ifelse(is.na(attitudesA), 0, attitudesA)
-# attitudesB <- ifelse(is.na(attitudesB), 0, attitudesB)
-# attitudes <- attitudesA + attitudesB
-# attitudes <- ifelse(attitudes == 8, 4, attitudes)
-# attitudes <- ifelse(attitudes == 5 | attitudes == 6, attitudes + 1, attitudes)
-# attitudes <- ifelse(attitudes == 9, 5, attitudes)
-# table(attitudes) # check
-
-
-demographics_02 <- data.frame(qn = print_02$qn, # no lifestyle or attitudes yet
+demographics_02 <- data.frame(qn = print_02$qn,
                               pwgt = print_02$pwgt,
                               age,
                               sex,
@@ -422,9 +380,78 @@ demographics_02 <- data.frame(qn = print_02$qn, # no lifestyle or attitudes yet
                               mar_status,
                               lsm)
 
+#reducing levels of categorical variables and setting factor types for demographics:
+# age:
+demographics_02$age <- ifelse(demographics_02$age %in% c(1,2), 1, demographics_02$age)
+demographics_02$age <- ifelse(demographics_02$age %in% c(3,4), 2, demographics_02$age)
+demographics_02$age <- ifelse(demographics_02$age %in% c(5,6), 3, demographics_02$age)
+demographics_02$age <- ifelse(demographics_02$age %in% c(7,8), 4, demographics_02$age)
+demographics_02$age <- factor(demographics_02$age, ordered = TRUE)
 
-# save as
+# sex:
+demographics_02$sex <- factor(demographics_02$sex, ordered = FALSE)
 
+#edu:
+demographics_02$edu <- ifelse(demographics_02$edu %in% c(1,2,3,4), 1, demographics_02$edu)
+demographics_02$edu <- ifelse(demographics_02$edu %in% c(5), 2, demographics_02$edu)
+demographics_02$edu <- ifelse(demographics_02$edu %in% c(6,7,8), 3, demographics_02$edu)
+demographics_02$edu <- factor(demographics_02$edu, ordered = TRUE)
+
+#hh_inc
+demographics_02$hh_inc <- ifelse(demographics_02$hh_inc %in% c(1,2,3,4), 1, demographics_02$hh_inc)
+demographics_02$hh_inc <- ifelse(demographics_02$hh_inc %in% c(5,6), 2, demographics_02$hh_inc)
+demographics_02$hh_inc <- ifelse(demographics_02$hh_inc %in% c(7), 3, demographics_02$hh_inc)
+demographics_02$hh_inc <- ifelse(demographics_02$hh_inc %in% c(8), 4, demographics_02$hh_inc)
+demographics_02$hh_inc <- factor(demographics_02$hh_inc, ordered = TRUE)
+
+demographics_02$race <- factor(demographics_02$race, ordered = FALSE)
+demographics_02$province <- factor(demographics_02$province, ordered = FALSE)
+demographics_02$metro <- factor(demographics_02$metro, ordered = FALSE)
+demographics_02$lang <- factor(demographics_02$lang, ordered = FALSE)
+demographics_02$lifestages <- factor(demographics_02$lifestages, ordered = FALSE)
+demographics_02$mar_status <- factor(demographics_02$mar_status, ordered = FALSE)
+# demographics_02$pers_inc <- factor(demographics_02$pers_inc, ordered = TRUE)
+
+# lsm
+demographics_02$lsm <- ifelse(demographics_02$lsm %in% c(1,2), 1, demographics_02$lsm)
+demographics_02$lsm <- ifelse(demographics_02$lsm %in% c(3,4), 2, demographics_02$lsm)
+demographics_02$lsm <- ifelse(demographics_02$lsm %in% c(5,6), 3, demographics_02$lsm)
+demographics_02$lsm <- ifelse(demographics_02$lsm %in% c(7,8), 4, demographics_02$lsm)
+demographics_02$lsm <- ifelse(demographics_02$lsm %in% c(9,10), 5, demographics_02$lsm)
+demographics_02$lsm <- factor(demographics_02$lsm, ordered = TRUE)
+
+# demographics_02$lifestyle <- factor(demographics_02$lifestyle, ordered = FALSE) # not for 2002 yet
+# demographics_02$attitudes <- factor(demographics_02$attitudes, ordered = FALSE) # not for 2002 yet
+
+# save
 saveRDS(demographics_02, "demographics_02.rds")
 demographics_02 <- readRDS("demographics_02.rds")
- 
+
+
+
+# read datafiles if necessary
+magazines_engagement_02 <- readRDS("magazines_engagement_02.rds")
+newspapers_engagement_02 <- readRDS("newspapers_engagement_02.rds")
+radio_engagement_02 <- readRDS("radio_engagement_02.rds")
+tv_engagement_02 <- readRDS("tv_engagement_02.rds")
+internet_engagement_02 <- readRDS("internet_engagement_02.rds")
+
+media_type_02 <- readRDS("media_type_02.rds")
+media_type_02_simple <- readRDS("media_type_02_simple.rds")
+media_vehicles_02 <- readRDS("media_vehicles_02.rds")
+media_vehicles_02_simple <- readRDS("media_vehicles_02_simple.rds")
+demographics_02 <- readRDS("demographics_02.rds")
+
+# #create single dataset minus non metropolitans
+set02 <- demographics_02 %>%
+        left_join(media_type_02) %>%
+        left_join(media_vehicles_02) %>%
+        filter(metro != 0)
+set02_simple <- demographics_02 %>%
+        left_join(media_type_02_simple) %>%
+        left_join(media_vehicles_02_simple) %>%
+        filter(metro != 0)
+
+# save them:
+saveRDS(set02, "set02.rds")
+saveRDS(set02_simple, "set02_simple.rds")
