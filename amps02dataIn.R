@@ -240,6 +240,7 @@ saveRDS(internet_engagement_02, "internet_engagement_02.rds")
 saveRDS(internet_engagement_02_simple, "internet_engagement_02_simple.rds")
 internet_engagement_02 <- readRDS("internet_engagement_02.rds")
 internet_engagement_02_simple <- readRDS("internet_engagement_02_simple.rds")
+
 ## create single dataframe for media02, including total_engagement columns)
 
 # Level 1: Type
