@@ -53,7 +53,7 @@ kmeans02 <- kmeans(set02[,c("newspapers","magazines","radio", "tv", "internet", 
                    iter.max = 20)
 set.seed(12)
 kmeans02_simple <- kmeans(set02_simple[,c("newspapers","magazines","radio", "tv", "internet", "all")],
-                   centers = 5,
+                   centers = 4,
                    nstart = 20,
                    iter.max = 20)
 
