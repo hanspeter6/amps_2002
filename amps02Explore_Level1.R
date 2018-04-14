@@ -19,6 +19,7 @@ library(gridExtra)
 #  read in dataset
 set02 <- readRDS("set02.rds")
 set02_simple <- readRDS("set02_simple.rds")
+set02_other <- readRDS("set02_other.rds")
 
 # consider some correlations
 png('corTypePlot2002.png')
@@ -80,6 +81,8 @@ set02c_simple <- set02_simple %>%
 saveRDS(set02c, "set02c.rds")
 saveRDS(set02c_simple, "set02c_simple.rds")
 
+set02c <- readRDS("set02c.rds")
+set02c_simple <- readRDS("set02c_simple.rds")
 
 # some plots
 # boxplots of clusters and media types
@@ -116,7 +119,17 @@ dev.off()
 d1 <- ggplot(set02c, aes(race, cluster, fill = cluster)) +
         geom_col() +
         labs(title = "race", y = "", x = "") +
-        scale_x_discrete(labels=c("black", "coloured", "indian", "white"))
+        scale_x_discrete(labels=c("black", "coloured","indian", "white"))
+
+# ggplot(set02c, aes(newspapers, race)) + 
+#         geom_bar(aes(fill = cluster), stat = "identity", position = "dodge")
+# 
+# dat.g <- gather(set02c, cluster, value, -country)
+# 
+# ggplot(set02c, aes(cluster, race)) +
+#         geom_bar(stat = "summary", fun.y = "mean")
+
+
 d2 <- ggplot(set02c, aes(edu, cluster, fill = cluster)) +
         geom_col() +
         labs(title = "education", y = "", x = "") +
