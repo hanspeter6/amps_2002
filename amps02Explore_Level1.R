@@ -18,11 +18,11 @@ library(gridExtra)
 
 #  read in dataset
 set02 <- readRDS("set02.rds")
-set02_simple <- readRDS("set02_simple.rds")
-set02_other <- readRDS("set02_other.rds")
+# set02_simple <- readRDS("set02_simple.rds")
+
 
 # consider some correlations
-png('corTypePlot2002.png')
+jpeg('corTypePlot2002.jpeg')
 corrplot(cor(set02[,c("newspapers","magazines","radio", "tv", "internet")]),
          method = "pie",
          order = "hclust",
@@ -47,42 +47,44 @@ png('kmeansTypePlot2002.png')
 plot(c(1,2,3,4,5,6), wss, type = "b", xlab = "k-values", ylab = "total within sum of squares" )
 dev.off()
 
-set.seed(12)
+set.seed(123)
 kmeans02 <- kmeans(set02[,c("newspapers","magazines","radio", "tv", "internet", "all")],
                    centers = 4,
-                   nstart = 20,
-                   iter.max = 20)
-set.seed(12)
-kmeans02_simple <- kmeans(set02_simple[,c("newspapers","magazines","radio", "tv", "internet", "all")],
-                   centers = 4,
-                   nstart = 20,
-                   iter.max = 20)
+                   nstart = 5,
+                   iter.max = 100)
+# set.seed(12)
+# kmeans02_simple <- kmeans(set02_simple[,c("newspapers","magazines","radio", "tv", "internet", "all")],
+#                    centers = 4,
+#                    nstart = 20,
+#                    iter.max = 20)
 
 
 # Comparing 2002 with 2005... will change colours if necessary to reflect meaning based on 2012:
 
-# red becomes green:  1 becomes 2
-# green becomes lilac: 2 becomes 4
-# blue stays blue:   3 stays 3
-# lilac becomes red: 4 becomes 1
-kmeans02$cluster <- ifelse(kmeans02$cluster == 1, 7, kmeans02$cluster)
+# red stays red:  1 -> 1
+# green becomes lilac: 2 -> 4
+# blue stays blue:   3 -> 3
+# lilac becomes green: 4 -> 2
+kmeans02$cluster <- ifelse(kmeans02$cluster == 1, 6, kmeans02$cluster)
 kmeans02$cluster <- ifelse(kmeans02$cluster == 2, 9, kmeans02$cluster)
 kmeans02$cluster <- ifelse(kmeans02$cluster == 3, 8, kmeans02$cluster)
-kmeans02$cluster <- ifelse(kmeans02$cluster == 4, 6, kmeans02$cluster)
+kmeans02$cluster <- ifelse(kmeans02$cluster == 4, 7, kmeans02$cluster)
 kmeans02$cluster <- kmeans02$cluster - 5
 
 
 # add cluster labels to the dataset
 set02c <- set02 %>%
-        mutate(cluster = factor(kmeans02$cluster))
-set02c_simple <- set02_simple %>%
-        mutate(cluster = factor(kmeans02_simple$cluster))
+        mutate(cluster = factor(kmeans02$cluster)) %>%
+        dplyr::select(qn, pwgt, cluster, everything())
+
+# set02c_simple <- set02_simple %>%
+#         mutate(cluster = factor(kmeans02_simple$cluster))
 
 saveRDS(set02c, "set02c.rds")
-saveRDS(set02c_simple, "set02c_simple.rds")
+# saveRDS(set02c_simple, "set02c_simple.rds")
 
 set02c <- readRDS("set02c.rds")
-set02c_simple <- readRDS("set02c_simple.rds")
+# set02c_simple <- readRDS("set02c_simple.rds")
 
 # some plots
 # boxplots of clusters and media types
@@ -121,15 +123,6 @@ d1 <- ggplot(set02c, aes(race, cluster, fill = cluster)) +
         labs(title = "race", y = "", x = "") +
         scale_x_discrete(labels=c("black", "coloured","indian", "white"))
 
-# ggplot(set02c, aes(newspapers, race)) + 
-#         geom_bar(aes(fill = cluster), stat = "identity", position = "dodge")
-# 
-# dat.g <- gather(set02c, cluster, value, -country)
-# 
-# ggplot(set02c, aes(cluster, race)) +
-#         geom_bar(stat = "summary", fun.y = "mean")
-
-
 d2 <- ggplot(set02c, aes(edu, cluster, fill = cluster)) +
         geom_col() +
         labs(title = "education", y = "", x = "") +
@@ -167,7 +160,12 @@ jpeg('typeDemogPlots2_02.jpeg', quality = 100, type = "cairo")
 grid.arrange(d5, d6, d7, ncol=2, nrow = 2)
 dev.off()
 
+# # strange plot for radio in boxplots: explore a bit
+# a <- set02c %>% group_by(cluster) %>%
+#         count(radio) %>%
+#         arrange(desc(n))
 
+# looks right but strange that medians are exactly equal...means, sds etc are not..
 
 
 
