@@ -99,7 +99,7 @@ pca_02_nat <- PCA(set02_nat,
 
 # # try FactoInvestigate
 # library(FactoInvestigate)
-# Investigate(pca_02_nat)
+# Investigate(pca_02_nat, "factoInvestigate_02_nat.Rmd", c("pdf_document"))
 
 
 # contributions plots
