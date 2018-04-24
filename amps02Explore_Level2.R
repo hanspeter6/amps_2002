@@ -31,6 +31,11 @@ set02c <- readRDS("set02c.rds")
 # isolate cape town
 set02_CT <- set02c %>% filter(metro == 1) 
 
+
+ # try with nationals
+set02_CT <- set02_nat
+
+
 # isolate johannesburg
 set02_JHB <- set02c %>% filter(metro == 7)
 
@@ -38,7 +43,7 @@ set02_JHB <- set02c %>% filter(metro == 7)
 ind_ct <- nearZeroVar(set02_CT[,21:ncol(set02_CT)], saveMetrics = TRUE)
 ind_jhb <- nearZeroVar(set02_JHB[,21:ncol(set02_JHB)], saveMetrics = TRUE)
 
-good_ct <- set02_CT[,21:ncol(set02_CT)][,!ind_ct$nzv]
+good_ct <- set02_CT[,21:ncol(set02_CT)][,!ind_ct$zeroVar]
 good_jhb <- set02_JHB[,21:ncol(set02_JHB)][,!ind_jhb$nzv]
 
 catSet02_CT <- data.frame(cbind(set02_CT[,1:20], good_ct))

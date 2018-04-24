@@ -18,8 +18,7 @@ library(gridExtra)
 
 #  read in dataset
 set02 <- readRDS("set02.rds")
-# set02_simple <- readRDS("set02_simple.rds")
-
+set02_simple <- readRDS("set02_simple.rds")
 
 # consider some correlations
 jpeg('corTypePlot2002.jpeg')
