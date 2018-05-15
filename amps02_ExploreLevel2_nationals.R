@@ -16,9 +16,19 @@ library(FactoMineR)
 library(factoextra)
 library(gridExtra)
 library(ggplot2)
+library(mvnormtest)
 
 # load datafiles 
 set02_nat <- readRDS("/Users/HansPeter/Dropbox/Statistics/UCTDataScience/Thesis/amps_nationals/set02_nat.rds")
+
+# multivariate normal assumption test
+
+trans <- t(as.matrix(set02_nat[sample(nrow(set02_nat),
+                                      size = 5000),20:44]))
+mshapiro.test(trans)
+
+# what _nat have that are not in _min
+names(set02_nat)[which(!names(set02_nat) %in% names(set02_min))]
 
 # LEVEL 2
 
@@ -96,6 +106,19 @@ pca_02_nat <- PCA(set02_nat,
                  quali.sup = c(2,5),
                  ncp = npc,
                  graph = FALSE)
+saveRDS(pca_02_nat, "pca_02_nat.rds")
+
+# try pa method of factor analysis with oblimin rotation allowed....to try and get better estimation
+library(psych)
+set.seed(123)
+fact_02 <- fa(set02_nat[7:ncol(set02_nat)], nfactors = 6, fm = "pa") # default rotation oblimin, so does allow correlation between factors
+fact_02_loadings <- fact_02$loadings
+fact_02_scores <- fact_02$scores
+
+# rather try print as table for importing:
+capture.output(print(fact_02$loadings,digits=2,all=FALSE,cut=0.1,sort=TRUE,short=TRUE,lower=TRUE,signif=NULL), file = "/Users/HansPeter/Dropbox/Statistics/UCTDataScience/Thesis/amps_2008/loadings.csv", append = TRUE)
+
+
 
 # # try FactoInvestigate
 # library(FactoInvestigate)
