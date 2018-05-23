@@ -11,14 +11,14 @@ set02_min <- readRDS("/Users/HansPeter/Dropbox/Statistics/UCTDataScience/Thesis/
 # Subsetting only on the variable I intend to use in this section:
 set02_min <- set02_min[,-c(1:2,8:12,14:19)]
 
-# ## Determine Number of Factors to Extract
-# ev <- eigen(cor(set02_min[,7:ncol(set02_min)]))
-# ap <- parallel(subject=nrow(set02_min[,7:ncol(set02_min)]),var=ncol(set02_min[,7:ncol(set02_min)]),
-#                rep=100,cent=.02)
-# nS <- nScree(x=ev$values, aparallel=ap$eigen$qevpea)
-# jpeg("nScree_02_min")
-# plotnScree(nS, main = "National") # optimal = 6
-# dev.off()
+## Determine Number of Factors to Extract
+ev <- eigen(cor(set02_min[,7:ncol(set02_min)]))
+ap <- parallel(subject=nrow(set02_min[,7:ncol(set02_min)]),var=ncol(set02_min[,7:ncol(set02_min)]),
+               rep=100,cent=.02)
+nS <- nScree(x=ev$values, aparallel=ap$eigen$qevpea)
+jpeg("nScree_02_min")
+plotnScree(nS, main = "National") # optimal = 6
+dev.off()
 # 
 # # will set them at six for both Jhb and CT for now
 # npc <- 6
@@ -34,7 +34,7 @@ set02_min <- set02_min[,-c(1:2,8:12,14:19)]
 
 # pa method of factor analysis with oblimin rotation allowed....to try and get better estimation
 set.seed(123)
-fact_02 <- fa(set02_min[7:ncol(set02_min)], nfactors = 6, fm = "pa") # default rotation oblimin, so does allow correlation between factors
+fact_02 <- fa(set02_min[7:ncol(set02_min)], nfactors = 7, fm = "ml") # default rotation oblimin, so does allow correlation between factors
 fact_02_loadings <- fact_02$loadings
 fact_02_scores <- fact_02$scores
 
@@ -47,3 +47,4 @@ saveRDS(fact_02_loadings, "fact_02_loadings.rds")
 # save scores:
 saveRDS(fact_02_scores, "fact_02_scores.rds")
 
+write.csv(round(loadings(fact_02, sort = TRUE), 2), file = "loadings_min_02.csv")

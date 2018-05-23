@@ -31,6 +31,12 @@ load("labels_02.RData")
 
 ## 1st Print (newspapers and magazines) Media Set
 
+
+# quick chck on actual "age"
+ca44co39
+summary(personal_02$ca44co39)
+sum(personal_02$ca44co39 == 999)
+
 ## ISSUES
 names_issues_print_02 <- str_subset(print_02_labels, 'Number of different issues usually read or page through') %>%
         str_replace('.+\\s-', '') %>%
@@ -385,7 +391,22 @@ media_vehicles_02_simple <- readRDS('media_vehicles_02_simple.rds')
 
 ## 4th Demographics Set (see notes for descriptions)
 age <- personal_02[,'ca44co38']
+age_actual <- personal_02[,'ca44co39'] # actual age..note some 999 = refusal or dont know
+
 sex <- demogrs_02[,'ca46co51a']
+
+edu_alt <- personal_02[,'ca44co42'] # gives more sensible and additional level
+#ca44co42:
+# 1 No schooling
+# 2 Some primary school
+# 3 Primary school completed
+# 4 Some high school
+# 5 Matric (Grade 12)
+# 6 Artisan's certificate obtained
+# 7 Technikon diploma
+# 8 University degree completed
+# 9 Professional
+
 edu <- demogrs_02[,'ca46co48']
 for(i in 1: length(edu)) {
         if(edu[i] %in% c(6,7)) {
@@ -395,7 +416,57 @@ for(i in 1: length(edu)) {
                 edu[i] <- 6
         }
 }
+
 hh_inc <- demogrs_02[,'ca46co50']
+
+# more levels for numeric treatment later on
+hh_inc1 <- personal_02[,'ca45co35'] # 1 - 9
+hh_inc2 <- personal_02[,'ca45co36'] # 0 - 9 == 10 - 19
+hh_inc3 <- personal_02[,'ca45co37'] # 0 - 9 == 20 - 29
+hh_inc4 <- personal_02[,'ca45co38'] # 0 - 2 == 30 - 32
+
+hh_bind <- cbind.data.frame(hh_inc1,(10 + hh_inc2), (20 + hh_inc3),(30 + hh_inc4) )
+hh_bind[is.na(hh_bind)] <- 0
+hh_inc_alt <- rowSums(hh_bind)
+# ca45co38:
+#         0 R25 000-R29 999
+# 1 R30 000-R39 999
+# 2 R40 000+
+#         3 No personal income
+# 4 Refused
+# ca45co37:
+#         0 R6 000-R6 999
+# 1 R7 000-R7 999
+# 2 R8 000-R8 999
+# 3 R9 000-R9 999
+# 4 R10 000-R10 999
+# 5 R11 000-R11 999
+# 6 R12 000-R13 999
+# 7 R14 000-R15 999
+# 8 R16 000-R19 999
+# 9 R20 000-R24 999
+# ca45co36:
+#         0 R1 000-R1 099
+# 1 R1 100-R1 199
+# 2 R1 200-R1 399
+# 3 R1 400-R1 599
+# 4 R1 600-R1 999
+# 5 R2 000-R2 499
+# 6 R2 500-R2 999
+# 7 R3 000-R3 999
+# 8 R4 000-R4 999
+# 9 R5 000-R5 999
+# ca45co35:
+#         1 R1-R199
+# 2 R200-R299
+# 3 R300-R399
+# 4 R400-R499
+# 5 R500-R599
+# 6 R600-R699
+# 7 R700-R799
+# 8 R800-R899
+# 9 R900-R999
+
 race <- demogrs_02[,'ca46co51b']
 # dataset: 1 = white, 2 = black, 3 = coloured, 4 = indian.
 # 2012 dataset: 1 = black, 2 = coloured, 3 = indian, 4 = white
@@ -451,9 +522,12 @@ lsm <- ifelse(lsm == 0,10,lsm)
 demographics_02 <- data.frame(qn = print_02$qn,
                               pwgt = print_02$pwgt,
                               age,
+                              # age_actual,
                               sex,
                               edu,
+                              # edu_alt
                               hh_inc,
+                              # hh_inc_alt
                               race,
                               province,
                               metro,
